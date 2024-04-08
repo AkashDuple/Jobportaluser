@@ -1,35 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
+import { useFormik } from 'formik';
 
 const Submit = (props) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    resume: null,
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      phone: "",
+      email: "",
+      resume: null,
+      experience: "",
+      salary: ""
+    },
+    validate: values => {
+      const errors = {};
+      if (!values.name) {
+        errors.name = 'Required';
+      }
+
+      if (!values.phone) {
+        errors.phone = 'Required';
+      }
+       
+      if (!values.experience) {
+        errors.experience = 'Required';
+      }
+
+      if (!values.email) {
+        errors.email = 'Required';
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+        errors.email = 'Invalid email address';
+      }
+      return errors;
+    },
+    onSubmit: (values, { setSubmitting }) => {
+      setTimeout(() => {
+        alert(JSON.stringify(values, null, 2));
+        setSubmitting(false);
+      }, 400);
+    },
   });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      resume: e.target.files[0],
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here, for example:
-    console.log("Form submitted:", formData);
-    // Close the modal after form submission
-    onClose();
-  };
 
   return (
     <div
@@ -45,7 +54,7 @@ const Submit = (props) => {
             e.stopPropagation();
           }}
         >
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={formik.handleSubmit}>
             <div className="py-2 border-b flex justify-between items-center">
               <div className="text-xl font-semibold">Apply</div>
               <div
@@ -74,14 +83,16 @@ const Submit = (props) => {
                     name="name"
                     type="text"
                     placeholder="Enter your name"
-                    value={formData.name}
-                    onChange={handleChange}
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.name && formik.errors.name ? <div className="text-red-500">{formik.errors.name}</div> : null}
                 </div>
                 <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="name"
+                    htmlFor="experience"
                   >
                     Experience
                   </label>
@@ -91,14 +102,16 @@ const Submit = (props) => {
                     name="experience"
                     type="text"
                     placeholder="Enter experience"
-                    value={formData.name}
-                    onChange={handleChange}
+                    value={formik.values.experience}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                   {formik.touched.experience && formik.errors.experience ? <div className="text-red-500">{formik.errors.experience}</div> : null}
                 </div>
                 <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="name"
+                    htmlFor="salary"
                   >
                     Salary
                   </label>
@@ -108,8 +121,9 @@ const Submit = (props) => {
                     name="salary"
                     type="text"
                     placeholder="Current Salary"
-                    value={formData.name}
-                    onChange={handleChange}
+                    value={formik.values.salary}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
                 </div>
                 <div className="mb-4">
@@ -125,9 +139,11 @@ const Submit = (props) => {
                     name="phone"
                     type="tel"
                     placeholder="Enter your phone number"
-                    value={formData.phone}
-                    onChange={handleChange}
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                   {formik.touched.phone && formik.errors.phone ? <div className="text-red-500">{formik.errors.phone}</div> : null}
                 </div>
                 <div className="mb-4">
                   <label
@@ -142,9 +158,11 @@ const Submit = (props) => {
                     name="email"
                     type="email"
                     placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.email && formik.errors.email ? <div className="text-red-500">{formik.errors.email}</div> : null}
                 </div>
                 <div className="mb-4">
                   <label
@@ -158,8 +176,12 @@ const Submit = (props) => {
                     id="resume"
                     name="resume"
                     type="file"
-                    onChange={handleFileChange}
+                    onChange={(event) => {
+                      formik.setFieldValue("resume", event.currentTarget.files[0]);
+                    }}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.resume && formik.errors.resume ? <div className="text-red-500">{formik.errors.resume}</div> : null}
                 </div>
               </div>
             </div>

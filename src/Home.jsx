@@ -3,6 +3,8 @@ import SearchBar from "./components/SearchBar";
 import JobCard from "./components/JobCard";
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
+import ReactPaginate from "react-paginate";
+import Pagination from "./components/Pagination";
 
 const Jobs = [
   {
@@ -62,26 +64,46 @@ const Jobs = [
 ];
 
 function Home() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState("");
+  const [sliderJobs, setSliderJobs] = useState("");
+  const [listJobs, setListJobs] = useState("");
+
   const [customSearch, setCustomSearch] = useState(false);
 
-  const fetchJobs = async () => {
-    setCustomSearch(false);
-    const tempJobs = [];
-    const jobsRef = query(collection(db, "jobs"));
-    const q = query(jobsRef, orderBy("postedOn", "desc"));
-    const req = await getDocs(q);
-
-    req.forEach((job) => {
-      // console.log(doc.id, " => ", doc.data());
-      tempJobs.push({
-        ...job.data(),
-        id: job.id,
-        postedOn: job.data().postedOn.toDate(),
+  const fetchJobsAPI = async () => {
+    try {
+      const fetch = await axios.get(API.getJobs);
+      setJobs(fetch.data.data);
+    } catch (error) {
+      return res.status(500).send({
+        message: "Internal Server Error",
+        status: false,
       });
-    });
-    setJobs(tempJobs);
+    }
   };
+
+  useEffect(() => {
+    setSliderJobs(jobs.slice(5));
+    setListJobs(jobs.slice(0, 10));
+  }, [jobs]);
+
+  // const fetchJobs = async () => {
+  //   setCustomSearch(false);
+  //   const tempJobs = [];
+  //   const jobsRef = query(collection(db, "jobs"));
+  //   const q = query(jobsRef, orderBy("postedOn", "desc"));
+  //   const req = await getDocs(q);
+
+  //   req.forEach((job) => {
+  //     // console.log(doc.id, " => ", doc.data());
+  //     tempJobs.push({
+  //       ...job.data(),
+  //       id: job.id,
+  //       postedOn: job.data().postedOn.toDate(),
+  //     });
+  //   });
+  //   setJobs(tempJobs);
+  // };
 
   const fetchJobsCustom = async (jobCriteria) => {
     setCustomSearch(true);
@@ -105,17 +127,28 @@ function Home() {
         postedOn: job.data().postedOn.toDate(),
       });
     });
-    setJobs(tempJobs);
+    // setJobs(tempJobs);
+    setListJobs(tempJobs.slice(0, 10));
   };
 
   useEffect(() => {
-    fetchJobs();
+    fetchJobsAPI();
   }, []);
+ 
+  const handleRightpage= ()=>{
 
+  }
+  const handleLeftpage= ()=>{
+    
+  }
   return (
     <div>
-     <Header /> 
-      <SearchBar fetchJobsCustom={fetchJobsCustom} />
+      <Header />
+      <SearchBar
+        fetchJobsCustom={fetchJobsCustom}
+        //category={}
+      />
+
       {customSearch && (
         <button onClick={fetchJobs} className="flex pl-[1250px] mb-2">
           <p className="bg-blue-500 px-10 py-2 rounded-md text-white">
@@ -126,6 +159,8 @@ function Home() {
       {Jobs.map((job) => (
         <JobCard key={job.id} {...job} />
       ))}
+    
+     <Pagination  onRightclick ={handleRightpage}  onLeftclick={handleLeftpage}  /> 
     </div>
   );
 }

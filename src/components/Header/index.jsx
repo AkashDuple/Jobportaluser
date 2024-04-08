@@ -25,18 +25,27 @@ function Header() {
   };
   return (
     <>
-      <div className="h-[20vh] bg-slate-100 pt-0">
+      <div className=" h-[20vh] bg-slate-100 pt-0">
+        <div className="mx-40">
         <Carousel responsive={responsive}>
-          <div className="flex flex-row justify-between w-full px-20 h-[20vh] items-center">
+          <div className="flex flex-row justify-between px-40 h-[20vh] items-center">
             <div>
               <h1 className="text-4xl">Software Engineer</h1>
               <h2>London</h2>
             </div>
             <div>
-            <Link to={"/jobdetails"} className="text-4xl">Jobdetails</Link>
+            <Link to={"/jobdetails"} className="text-4xl px-40">Jobdetails</Link>
             </div>
           </div>
-          <div>Item 2</div>
+          <div className="flex flex-row justify-between px-40 h-[20vh] items-center">
+            <div>
+              <h1 className="text-4xl">Software Engineer</h1>
+              <h2 className="mt-5">London | Web Development</h2>
+            </div>
+            <div>
+            <Link to={"/jobdetails"} className="text-4xl px-40">Jobdetails</Link>
+            </div>
+          </div>
           <div>Item 3</div>
           <div>Item 4</div>
           <div>Item 1</div>
@@ -44,6 +53,7 @@ function Header() {
           <div>Item 3</div>
           <div>Item 4</div>
         </Carousel>
+        </div>
       </div>
     </>
   );
