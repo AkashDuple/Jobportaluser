@@ -11,7 +11,7 @@ import Jobdetails from "./Jobdetails";
 import Jobdetails2 from "./Jobdetails2";
 import JobDetails3 from "./Jobdetails3";
 import Jobdetails3 from "./Jobdetails3";
-
+import Jobdetails4 from "./Jobdetails4";
 
 // import {db} from "./firebase.config"
 
@@ -124,7 +124,7 @@ function App() {
     <div >
       <Router>
         <Navbar />
-        {/* <Header /> */}
+         {/* <Header/> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
