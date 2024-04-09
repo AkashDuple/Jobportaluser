@@ -1,32 +1,90 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Submit from "./components/Submit";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import job from "./imgs/job2.jpg"
+import axios from "axios";
+import API from "./ApiRoutes";
 
 const Jobdetails3 = () => {
   const [modal, setModal] = useState(false);
+  const [data, setJobData] = useState({});
+  const [timeAgo, setTimeAgo] = useState("");
 
+  const location = useLocation();
+  const id = location.state.itemId;
+  console.log(id);
   const applyHandler = () => {
     console.log("Sumbitmodal");
     setModal(true);
   };
 
+  const fetchJobDetails = async () => {
+    try {
+      const fetch = await axios.get(`${API.JOB_URL}/${id}`);
+      console.log("fetch", fetch);
+      setJobData(fetch.data.data);
+    } catch (error) {}
+  };
+  console.log("data", data);
+  useEffect(() => {
+    fetchJobDetails();
+  }, []);
+
+  useEffect(() => {
+    const calculateTimeAgo = () => {
+      const currentDate = new Date();
+      const postedDate = new Date(data.createdAt);
+      const timeDifference = Math.abs(currentDate - postedDate); // in milliseconds
+
+      const seconds = Math.floor(timeDifference / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (days > 0) {
+        setTimeAgo(`${days} day${days > 1 ? "s" : ""} ago`);
+      } else if (hours > 0) {
+        setTimeAgo(`${hours} hour${hours > 1 ? "s" : ""} ago`);
+      } else if (minutes > 0) {
+        setTimeAgo(`${minutes} minute${minutes > 1 ? "s" : ""} ago`);
+      } else {
+        setTimeAgo("just now");
+      }
+    };
+
+    calculateTimeAgo();
+
+    // Refresh time every minute
+    const intervalId = setInterval(calculateTimeAgo, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [data.createdAt]);
+
   return (
     <div className="">
-      <div className="relative flex text-center h-[100px] items-center justify-center text-4xl font-semibold bg-slate-100 shadow-lg rounded-lg">
-        <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <img src="" className="w-full h-auto" />
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center ">
-          Jobdetails.
-        </div>
-      </div>
+    <div className="relative flex text-center h-[400px] items-center justify-center text-4xl font-semibold bg-slate-100 shadow-lg  overflow-hidden">
+  {/* Dark overlay */}
+  <div className="absolute inset-0 bg-black opacity-70  z-10"></div>
+  
+  {/* Image */}
+  <div className="absolute inset-0 flex items-center justify-center z-0">
+    <img src={job} className="w-full h-[400px] rounded-lg" />
+  </div>
+  
+  {/* Job details */}
+  <div className="absolute text-5xl inset-0 flex items-center justify-center text-white z-20">
+    Job details.
+  </div>
+</div>
+
+
 
       <div className="container mx-auto px-4 p-10 mt-5 bg-slate-100 shadow-lg rounded-lg">
         {modal && (
           <div className="mr-40">
-            <Submit close={() => setModal(false)} />
+            <Submit id={id} title={data.title} close={() => setModal(false)} />
           </div>
         )}
         <button
@@ -38,7 +96,7 @@ const Jobdetails3 = () => {
 
         <div className="flex flex-col justify-center items-center border-b-[1px] border-b-[#afaeae]">
           <h1 className="  mb-4 text-4xl md:text-4xl text-slate-800 ">
-            Graphic Designer
+            {data.title}
           </h1>
           <div className="flex flex-row justify-between w-full">
             {/* <p>Demo:data</p> */}
@@ -50,36 +108,39 @@ const Jobdetails3 = () => {
               <Link to="#">Job-details</Link>
             </p>
             <p className="text-lg mb-4  inline-flex font-medium bg-indigo-100 text-indigo-600 rounded-full text-center px-2.5 py-1">
-              Posted on: 5th April 2024
+              Posted {timeAgo}
             </p>
           </div>
         </div>
 
-        <div className="d-flex flex w-full  gap-10">
-          <div className="ml-20">
-            <div className="mb-8 ">
-              <h2 className="text-xl font-bold mb-2 border-b-[3px] border-b-[black] py-2 pr-6 mt-6 w-max ">
+        <div className="flex w-full justify-between ">
+          {/* Left side */}
+          <div className="w-3/4">
+            {" "}
+            {/* Take at least 70% of the area */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold mb-2 border-b-3 border-black py-2 pr-6 mt-6">
                 Job Description
               </h2>
-              <p className="">
-                Graphic designers create images and layouts for some of the
-                following:
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: data.description }} />
             </div>
           </div>
-          <div className="ms-10 px-10 py-8">
-            <div className="mb-8 inline-block">
-              <h2 className="text-xl font-bold mb-2 border-b-[3px] border-b-[black] py-2 pr-6 w-max">
+
+          {/* Right side */}
+          <div className="w-1/4 ml-10 mt-8">
+            {" "}
+            {/* Take about 25% of the area */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold mb-2 border-b-3 border-black py-2 pr-6">
                 Subject
               </h2>
-              <span>Web-Development</span>
+              <span>{data.subject}</span>
             </div>
-
             <div className="mb-8">
-              <h2 className="text-xl font-bold mb-2 border-b-[3px] border-b-[black] py-2 pr-6 w-max">
+              <h2 className="text-xl font-bold mb-2 border-b-3 border-black py-2 pr-6">
                 Location
               </h2>
-              <span>Chandigarh</span>
+              <span>{data.location}</span>
             </div>
           </div>
         </div>

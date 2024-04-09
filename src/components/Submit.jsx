@@ -1,45 +1,82 @@
 import React from "react";
-import { useFormik } from 'formik';
-
+import { useFormik } from "formik";
+import API from "../ApiRoutes";
+import axios from "axios";
+const AWS_S3 = "http://64.227.173.23:8080/aws-s3/image-upload/";
 const Submit = (props) => {
+  console.log("props", props);
   const formik = useFormik({
     initialValues: {
       name: "",
       phone: "",
       email: "",
       resume: null,
-      experience: "",
-      salary: ""
     },
-    validate: values => {
+    validate: (values) => {
       const errors = {};
       if (!values.name) {
-        errors.name = 'Required';
+        errors.name = "Required";
       }
 
       if (!values.phone) {
-        errors.phone = 'Required';
-      }
-       
-      if (!values.experience) {
-        errors.experience = 'Required';
+        errors.phone = "Required";
       }
 
       if (!values.email) {
-        errors.email = 'Required';
-      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-        errors.email = 'Invalid email address';
+        errors.email = "Required";
+      } else if (
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+      ) {
+        errors.email = "Invalid email address";
       }
       return errors;
     },
-    onSubmit: (values, { setSubmitting }) => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        setSubmitting(false);
-      }, 400);
+    onSubmit: async (values) => {
+      try {
+        // Upload PDF to AWS S3
+        const formData = new FormData();
+        formData.append("image", values.resume);
+
+        const awsResponse = await axios.post(AWS_S3, formData);
+        const imageUrl = awsResponse.data.data.url;
+
+        // Update formik values with resume URL
+        const payload = {
+          ...values,
+          resume: imageUrl,
+          jobTitle: props.title,
+        };
+
+        // Submit form data with updated resume URL
+        const submitResponse = await axios.post(
+          `${API.CANDIDATE_URL}/apply/${props.id}`,
+          payload
+        );
+
+        console.log("Submission response:", submitResponse);
+      } catch (error) {
+        console.error("Error submitting details:", error);
+      }
     },
   });
 
+  const submitDetails = async (data) => {
+    try {
+      const payload = {
+        ...data,
+        jobTitle: props.title,
+      };
+      const fetch = await axios.post(
+        `${API.CANDIDATE_URL}/apply/${props.id}`,
+        payload
+      );
+      console.log("fetch", fetch);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  console.log("formik.errors", formik.errors);
   return (
     <div
       className=" w-full absolute z-100 inset-0 bg-black  bg-opacity-20 h-full "
@@ -75,7 +112,7 @@ const Submit = (props) => {
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="name"
                   >
-                    Name
+                    Name<span className="text-gray bg-red-50">*</span>
                   </label>
                   <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -87,45 +124,11 @@ const Submit = (props) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.name && formik.errors.name ? <div className="text-red-500">{formik.errors.name}</div> : null}
+                  {formik.touched.name && formik.errors.name ? (
+                    <div className="text-red-500">{formik.errors.name}</div>
+                  ) : null}
                 </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="experience"
-                  >
-                    Experience
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="experience"
-                    name="experience"
-                    type="text"
-                    placeholder="Enter experience"
-                    value={formik.values.experience}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                   {formik.touched.experience && formik.errors.experience ? <div className="text-red-500">{formik.errors.experience}</div> : null}
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="salary"
-                  >
-                    Salary
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="salary"
-                    name="salary"
-                    type="text"
-                    placeholder="Current Salary"
-                    value={formik.values.salary}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                </div>
+
                 <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
@@ -143,7 +146,9 @@ const Submit = (props) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                   {formik.touched.phone && formik.errors.phone ? <div className="text-red-500">{formik.errors.phone}</div> : null}
+                  {formik.touched.phone && formik.errors.phone ? (
+                    <div className="text-red-500">{formik.errors.phone}</div>
+                  ) : null}
                 </div>
                 <div className="mb-4">
                   <label
@@ -162,7 +167,9 @@ const Submit = (props) => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.email && formik.errors.email ? <div className="text-red-500">{formik.errors.email}</div> : null}
+                  {formik.touched.email && formik.errors.email ? (
+                    <div className="text-red-500">{formik.errors.email}</div>
+                  ) : null}
                 </div>
                 <div className="mb-4">
                   <label
@@ -176,12 +183,20 @@ const Submit = (props) => {
                     id="resume"
                     name="resume"
                     type="file"
+                    accept=".pdf"
                     onChange={(event) => {
-                      formik.setFieldValue("resume", event.currentTarget.files[0]);
+                      const file = event.currentTarget.files[0];
+                      if (file && file.type === "application/pdf") {
+                        formik.setFieldValue("resume", file);
+                      } else {
+                        formik.setFieldValue("resume", null); // Clear the field if invalid file is selected
+                      }
                     }}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.resume && formik.errors.resume ? <div className="text-red-500">{formik.errors.resume}</div> : null}
+                  {formik.touched.resume && formik.errors.resume ? (
+                    <div className="text-red-500">{formik.errors.resume}</div>
+                  ) : null}
                 </div>
               </div>
             </div>

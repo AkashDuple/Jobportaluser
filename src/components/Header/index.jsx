@@ -1,9 +1,13 @@
 import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import JobImage from "../../imgs/job.jpg";
+import SearchBar from "../SearchBar";
 
-function Header() {
+function Header({ jobData }) {
+  console.log("jobData", jobData);
+  const navigate = useNavigate();
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -23,39 +27,61 @@ function Header() {
       items: 1,
     },
   };
+  const applyHandler = (_id) => {
+    navigate(`/jobdetails`, { state: { itemId: _id } });
+  };
+
   return (
-    <>
-      <div className=" h-[20vh] bg-slate-100 pt-0">
-        <div className="mx-40">
-        <Carousel responsive={responsive}>
-          <div className="flex flex-row justify-between px-40 h-[20vh] items-center">
+    <div
+      className="relative h-[40vh]  opacity-100  inset-0 gap-0"
+      style={{
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        width: "100%",
+        height: "400px",
+      }}
+    >
+      <Carousel
+        responsive={responsive}
+        showArrows={false} // Hide arrows
+        autoPlay={true} // Start autoplay
+        autoPlaySpeed={5000} // Set autoplay speed (optional)
+        infinite={true} // Set infinite loop (optional)
+      >
+        {jobData.map((job, index) => (
+          <div
+            className="bg-cover bg-no-repeat bg-center flex flex-col gap-5 px-40 h-[60vh] items-left mt-0"
+            style={{ backgroundImage: `url('${JobImage}')` }}
+            key={index}
+          >
             <div>
-              <h1 className="text-4xl">Software Engineer</h1>
-              <h2>London</h2>
+              <h1 className="text-4xl mt-20 text-white font-bold">
+                {job.title}
+              </h1>
+              <h2 className="text-white font-bold">
+                {job.location} | {job.subject}
+              </h2>
             </div>
             <div>
-            <Link to={"/jobdetails"} className="text-4xl px-40">Jobdetails</Link>
+              <button
+                onClick={() => {
+                  applyHandler(job._id);
+                }}
+                className="text-blue-500 border border-blue-500 px-10 py-2 rounded-md mt-5 font-semibold"
+              >
+                Apply
+              </button>
             </div>
           </div>
-          <div className="flex flex-row justify-between px-40 h-[20vh] items-center">
-            <div>
-              <h1 className="text-4xl">Software Engineer</h1>
-              <h2 className="mt-5">London | Web Development</h2>
-            </div>
-            <div>
-            <Link to={"/jobdetails"} className="text-4xl px-40">Jobdetails</Link>
-            </div>
-          </div>
-          <div>Item 3</div>
-          <div>Item 4</div>
-          <div>Item 1</div>
-          <div>Item 2</div>
-          <div>Item 3</div>
-          <div>Item 4</div>
-        </Carousel>
-        </div>
+        ))}
+      </Carousel>
+
+      <div className="absolute bottom-0 left-0 right-0 mx-auto w-[80%] shadow-lg  bg-white p-2  text-center">
+        <SearchBar />
       </div>
-    </>
+    </div>
   );
 }
 

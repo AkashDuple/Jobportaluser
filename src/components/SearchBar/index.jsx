@@ -1,58 +1,138 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import API from "../../ApiRoutes";
 
-function SearchBar(props) {
-    const [jobCriteria, setJobCriteria] = useState({
-        title: "",
+const indianStates = [
+  { name: "Andaman and Nicobar Islands" },
+  { name: "Andhra Pradesh" },
+  { name: "Arunachal Pradesh" },
+  { name: "Assam" },
+  { name: "Bihar" },
+  { name: "Chandigarh" },
+  { name: "Chhattisgarh" },
+  { name: "Dadra and Nagar Haveli" },
+  { name: "Daman and Diu" },
+  { name: "Delhi" },
+  { name: "Goa" },
+  { name: "Gujarat" },
+  { name: "Haryana" },
+  { name: "Himachal Pradesh" },
+  { name: "Jammu and Kashmir" },
+  { name: "Jharkhand" },
+  { name: "Karnataka" },
+  { name: "Kerala" },
+  { name: "Ladakh" },
+  { name: "Lakshadweep" },
+  { name: "Madhya Pradesh" },
+  { name: "Maharashtra" },
+  { name: "Manipur" },
+  { name: "Meghalaya" },
+  { name: "Mizoram" },
+  { name: "Nagaland" },
+  { name: "Odisha" },
+  { name: "Puducherry" },
+  { name: "Punjab" },
+  { name: "Rajasthan" },
+  { name: "Sikkim" },
+  { name: "Tamil Nadu" },
+  { name: "Telangana" },
+  { name: "Tripura" },
+  { name: "Uttar Pradesh" },
+  { name: "Uttarakhand" },
+  { name: "West Bengal" },
+];
+
+function SearchBar({ setJobs }) {
+  const [categories, setCategories] = useState([]);
+  const [location, setLocation] = useState([]);
+  const [jobCriteria, setJobCriteria] = useState({
+    search: "",
+    location: "",
+    category: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setJobCriteria((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const searchData = async () => {
+    try {
+      const fetch = await axios.post(`${API.JOB_URL}/search-job`, jobCriteria);
+      setJobCriteria({
+        search: "",
         location: "",
-        experience: "",
-        type:""
-    })
-
-    const handleChange = (e) => {
-        setJobCriteria((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value
-        }))
+        category: "",
+      });
+      console.log("fetch", fetch);
+      setJobs(fetch.data.data);
+    } catch (error) {
+      console.log("error", error);
     }
+  };
 
-    const search = async() => {
-        await props.fetchJobsCustom(jobCriteria);
+  const fetchCategories = async () => {
+    try {
+      const fetch = await axios.get(API.cat);
+      setCategories(fetch.data.data);
+    } catch (error) {
+      console.log("error", error);
     }
-    
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    setLocation(indianStates);
+  }, []);
 
   return (
-    <div className='flex gap-4 my-10 justify-center px-0'>
-        {/* <select onChange={handleChange} name="title" value={jobCriteria.title} className='w-64 py-3 pl-4 bg-zinc-200 font-semibold rounded-md'>
-            <option value="" disabled hidden>Job Role</option>
-            <option value="iOS Developer">iOS Developer</option>
-            <option value="Frontend Developer">Frontend Developer</option>
-            <option value="Backend Developer">Backend Developer</option>
-            <option value="Android Developer">Android Developer</option>
-            <option value="Developer Advocate">Developer Advocate</option>
-        </select> */}
-        <input name="search" placeholder="search..."  className='w-80 py-3 pl-4 bg-zinc-200 font-semibold rounded-md'></input>
-        <select onChange={handleChange}  name="type" value={jobCriteria.type} className='w-64 py-3 pl-4 bg-zinc-200 font-semibold rounded-md'>
-            <option value="" disabled hidden>Category</option>
-            <option value="Full Time">Full Time</option>
-            <option value="Part Time">Part Time</option>
-            <option value="Contract">Contract</option>
+    <div className="">
+      <div className="grid grid-cols-4 gap-2 ">
+        <input
+          name="search"
+          placeholder="Enter Job title..."
+          value={jobCriteria.search}
+          onChange={handleChange}
+          className=" py-3 md:w-64 bg-zinc-200 font-semibold rounded-md placeholder-black"
+        />
+        <select
+          onChange={handleChange}
+          name="category"
+          value={jobCriteria.category}
+          className=" py-3  bg-zinc-200 font-semibold rounded-md"
+        >
+          <option value="">Category</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category.category}>
+              {category.category}
+            </option>
+          ))}
         </select>
-        <select onChange={handleChange} name="location" value={jobCriteria.location} className='w-64 py-3 pl-4 bg-zinc-200 font-semibold rounded-md'>
-            <option value="" disabled hidden>Location</option>
-            <option value="Remote">Remote</option>
-            <option value="In-Office">In-Office</option>
-            <option value="Hybrid">Hybrid</option>
+        <select
+          onChange={handleChange}
+          name="location"
+          value={jobCriteria.location}
+          className=" py-3  bg-zinc-200 font-semibold rounded-md"
+        >
+          <option value="">Select a Location...</option>
+          {location.map((state, index) => (
+            <option key={index} value={state.name}>
+              {state.name}
+            </option>
+          ))}
         </select>
-        {/* <select onChange={handleChange} name="experience" value={jobCriteria.experience} className='w-64 py-3 pl-4 bg-zinc-200 font-semibold rounded-md'>
-            <option value="" disabled hidden>Experience</option>
-            <option value="Fresher">Fresher</option>
-            <option value="Junior Level">Junior Level</option>
-            <option value="Mid Level">Mid Level</option>
-            <option value="Senior Level">Senior Level</option>
-        </select> */}
-        <button onClick={search} className='w-64 bg-blue-500 text-white font-bold py-3 rounded-md'>Search</button>
+        <button
+          onClick={searchData}
+          className=" py-3 bg-[blue]  md:w-64bg-blue-500 text-white font-bold  rounded-md"
+        >
+          Search
+        </button>
+      </div>
     </div>
-  )
+  );
 }
 
-export default SearchBar
+export default SearchBar;
