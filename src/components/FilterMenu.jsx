@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import API from "../../ApiRoutes";
+import API from "../ApiRoutes";
 
 const indianStates = [
   { name: "Andaman and Nicobar Islands" },
@@ -42,8 +42,8 @@ const indianStates = [
   { name: "West Bengal" },
 ];
 
-function SearchBar({ setJobs }) {
-  const [categories, setCategories] = useState([]);
+function FilterMenu({ setJobs  , categories , setCategories}) {
+
   const [location, setLocation] = useState([]);
   const [jobCriteria, setJobCriteria] = useState({
     search: "",
@@ -90,35 +90,35 @@ function SearchBar({ setJobs }) {
 
   return (
     <div className="">
-      <div className="grid grid-cols-4 gap-2 ">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2  mb-2">
         <input
           name="search"
           placeholder="Enter Job title..."
-          value={jobCriteria.search}
+          value={jobCriteria?.search}
           onChange={handleChange}
-          className=" py-3 md:w-64 bg-zinc-200 font-semibold rounded-md placeholder-black"
+          className=" py-2  bg-zinc-200 font-semibold rounded-md placeholder-black placeholder:p-2"
         />
         <select
           onChange={handleChange}
           name="category"
-          value={jobCriteria.category}
-          className=" py-3  bg-zinc-200 font-semibold rounded-md"
+          value={jobCriteria?.category}
+          className=" py-2 bg-zinc-200 font-semibold rounded-md"
         >
           <option value="">Category</option>
           {categories.map((category) => (
-            <option key={category._id} value={category.category}>
-              {category.category}
+            <option key={category?._id} value={category?.category}>
+              {category?.category}
             </option>
           ))}
         </select>
         <select
           onChange={handleChange}
           name="location"
-          value={jobCriteria.location}
-          className=" py-3  bg-zinc-200 font-semibold rounded-md"
+          value={jobCriteria?.location}
+          className=" py-2 bg-zinc-200 font-semibold rounded-md"
         >
           <option value="">Select a Location...</option>
-          {location.map((state, index) => (
+          {location?.map((state, index) => (
             <option key={index} value={state.name}>
               {state.name}
             </option>
@@ -126,13 +126,17 @@ function SearchBar({ setJobs }) {
         </select>
         <button
           onClick={searchData}
-          className=" py-3 bg-[blue]  md:w-64bg-blue-500 text-white font-bold  rounded-md"
+          className=" py-2 bg-blue-600  md:w-64bg-blue-500 text-white font-bold  rounded-md"
         >
           Search
         </button>
       </div>
+
+
+
+
     </div>
   );
 }
 
-export default SearchBar;
+export default FilterMenu;

@@ -3,8 +3,8 @@ import { useFormik } from "formik";
 import API from "../ApiRoutes";
 import axios from "axios";
 const AWS_S3 = "http://64.227.173.23:8080/aws-s3/image-upload/";
-const Submit = (props) => {
-  console.log("props", props);
+const ApplyFormJob = (props) => {
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -79,20 +79,20 @@ const Submit = (props) => {
   console.log("formik.errors", formik.errors);
   return (
     <div
-      className=" w-full absolute z-100 inset-0 bg-black  bg-opacity-20 h-full "
+      className=" w-full absolute z-100 inset-0   bg-opacity-20 h-full "
       onClick={(e) => {
         props.close();
       }}
     >
-      <div className="flex relative justify-center items-center h-full w-full ">
+      <div className="flex relative justify-center items-center h-full z-40 w-full ">
         <div
           className=" bg-white container p-4  rounded-lg shadow-lg"
           onClick={(e) => {
             e.stopPropagation();
           }}
         >
-          <form onSubmit={formik.handleSubmit}>
-            <div className="py-2 border-b flex justify-between items-center">
+          <form  className="" onSubmit={formik.handleSubmit}>
+            <div className="py-2 border-b flex justify-between items-center ">
               <div className="text-xl font-semibold">Apply</div>
               <div
                 title="close"
@@ -215,4 +215,4 @@ const Submit = (props) => {
   );
 };
 
-export default Submit;
+export default ApplyFormJob;
