@@ -14,7 +14,7 @@ const Jobdetail = () => {
   const [data, setJobData] = useState({});
   const [timeAgo, setTimeAgo] = useState("");
   const [toaster, setToaster] = useState(false);
-  const [isPopupOpen, setPopupOpen] = useState(true);
+  const [isPopupOpen, setPopupOpen] = useState(false);
 
   const toastMessage = () => {
     setModal(false);
