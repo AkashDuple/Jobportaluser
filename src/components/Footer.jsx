@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-200 py-4 text-center fixed ">
+    <footer className="bg-gray-200 py-4 text-center relative fixed ">
     <div className="container mx-auto">
       <ul className="flex justify-center space-x-4">
         <li><a href="#" className='font-semibold text-sm'>Jobs</a></li>

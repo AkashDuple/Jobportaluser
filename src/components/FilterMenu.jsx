@@ -42,8 +42,7 @@ const indianStates = [
   { name: "West Bengal" },
 ];
 
-function FilterMenu({ setJobs  , categories , setCategories}) {
-
+function FilterMenu({ setJobs, categories, setCategories }) {
   const [location, setLocation] = useState([]);
   const [jobCriteria, setJobCriteria] = useState({
     search: "",
@@ -51,6 +50,7 @@ function FilterMenu({ setJobs  , categories , setCategories}) {
     category: "",
   });
 
+  console.log("location", location);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setJobCriteria((prevState) => ({
@@ -77,18 +77,27 @@ function FilterMenu({ setJobs  , categories , setCategories}) {
   const fetchCategories = async () => {
     try {
       const fetch = await axios.get(API.cat);
-      setCategories((p)=>{
-        return (p.lenght>0?p:fetch.data.data)
+      setCategories((p) => {
+        return p.lenght > 0 ? p : fetch.data.data;
       });
     } catch (error) {
       console.log("error", error);
     }
   };
 
+  const fetchLocations = async () => {
+    try {
+      const locations = await axios.get(API.location);
+      setLocation(locations.data.data);
+      console.log("locations", locations.data.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
   useEffect(() => {
-    
+    fetchLocations();
     fetchCategories();
-    setLocation(indianStates);
+    // setLocation(indianStates);
   }, []);
 
   return (
@@ -121,9 +130,15 @@ function FilterMenu({ setJobs  , categories , setCategories}) {
           className=" py-2 bg-zinc-200 font-semibold rounded-md"
         >
           <option value="">Select a Location...</option>
-          {location?.map((state, index) => (
-            <option key={index} value={state.name}>
-              {state.name}
+          {location.map((location, index) => (
+            <option
+              key={index}
+              value={`${location.city}, ${
+                location.state ? location.state + ", " : ""
+              }${location.country}`}
+            >
+              {location.city}
+              {location.state ? `, ${location.state}` : ""}, {location.country}
             </option>
           ))}
         </select>
@@ -134,10 +149,6 @@ function FilterMenu({ setJobs  , categories , setCategories}) {
           Search
         </button>
       </div>
-
-
-
-
     </div>
   );
 }

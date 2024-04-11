@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import JobBanner from "/assets/imgs/jobBanner.jpg";
 import axios from "axios";
 import API from "../ApiRoutes";
+import ThankYouPage from "../components/Modals/ThankYouPage";
 import { toast, Toaster } from "react-hot-toast";
 
 const Jobdetail = () => {
@@ -13,6 +14,7 @@ const Jobdetail = () => {
   const [data, setJobData] = useState({});
   const [timeAgo, setTimeAgo] = useState("");
   const [toaster, setToaster] = useState(false);
+  const [isPopupOpen, setPopupOpen] = useState(true);
 
   const toastMessage = () => {
     setModal(false);
@@ -36,6 +38,7 @@ const Jobdetail = () => {
   console.log("data", data);
   useEffect(() => {
     fetchJobDetails();
+    window.scrollTo(0, 0)
   }, []);
 
   useEffect(() => {
@@ -76,9 +79,10 @@ const Jobdetail = () => {
 
   return (
     <div className="">
-      <div>
-        <Toaster />
-      </div>
+    
+        { <Toaster /> }
+        {isPopupOpen && <ThankYouPage />}
+    
       <div
         style={{ backgroundImage: `url('${JobBanner}')` }}
         className="relative flex text-center bg-cover bg-center bg-no-repeat  items-center h-[45vh] justify-center text-4xl font-semibold bg-slate-100 shadow-lg  "
@@ -103,12 +107,13 @@ const Jobdetail = () => {
 
       <div className=" mx-auto  py-10 px-4 w-full shadow-lg rounded-lg relative">
         {modal && (
-          <div className="mr-40 ">
+          <div className="mr-40 relative top-9 left-12">
             <Submit
               id={id}
               title={data?.title}
               close={() => setModal(false)}
               onSubmitModal={toastMessage}
+              setPopup={setPopupOpen}
             />
           </div>
         )}

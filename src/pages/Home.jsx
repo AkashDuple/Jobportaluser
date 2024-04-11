@@ -78,7 +78,7 @@ function Home() {
 
   const handleRightpage = () => {
     if (page === 10) return;
-    setListJobs(jobs.slice(0, 10 * page));
+    // setListJobs(jobs.slice(0, 10 * page));
     setPage((p) => p + 1);
   };
   const handleLeftpage = () => {

@@ -57,7 +57,29 @@ const ApplyFormJob = (props) => {
 
         console.log("Submission response:", submitResponse);
         props.onSubmitModal(false);
-        toast.success("Applied Successfully!");
+        
+        // toast.success("ThankYou \n    Your application has been submitted!",{
+        //   style: {
+        //     borderRadius: "8px",
+        //     background: "#4caf50",
+        //     color: "#fff",
+        //     padding: "16px",
+        //     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        //     width:"300px",
+        //     height:"200px"
+        //     // Add any other CSS properties you want to customize
+        //   },
+        //   duration: 5000, // Adjust the duration if needed
+        //   html: true,
+        // });
+
+        props.setPopup(true)
+
+        setTimeout(() => {
+          props.setPopup(false);
+        
+        }, 5000);
+
       } catch (error) {
         console.error("Error submitting details:", error);
         props.onSubmitModal(false);
