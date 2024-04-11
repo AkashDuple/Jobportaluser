@@ -1,6 +1,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
-export default function Pagination({ totalPages, currentPage, setPage }) {
+export default function Pagination({ totalPages, currentPage, setPage, }) {
+      let Pages = new Array(totalPages).fill(1);
+
   return (
     <div className="w-full mx-auto flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
       <div className="flex flex-1 justify-between sm:hidden">
@@ -38,7 +40,26 @@ export default function Pagination({ totalPages, currentPage, setPage }) {
             </a>
 
             {/* Render page numbers */}
-            {Array.from({ length: totalPages }).map((_, index) => (
+
+            {
+              Pages.map((_,index)=>(
+  
+                <a
+                href="#"
+                key={index}
+                className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                  index + 1 === currentPage
+                    ? "text-white bg-indigo-600"
+                    : "text-gray-900"
+                } ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0`}
+                onClick={() => setPage(index + 1)}
+              >
+                {index + 1}
+              </a>
+
+              ))
+            }
+            {/* {Array.from({ length: totalPages }).map((_, index) => (
               <a
                 href="#"
                 key={index}
@@ -51,7 +72,7 @@ export default function Pagination({ totalPages, currentPage, setPage }) {
               >
                 {index + 1}
               </a>
-            ))}
+            ))} */}
 
             <a
               href="#"

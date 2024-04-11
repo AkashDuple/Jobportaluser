@@ -77,13 +77,16 @@ function FilterMenu({ setJobs  , categories , setCategories}) {
   const fetchCategories = async () => {
     try {
       const fetch = await axios.get(API.cat);
-      setCategories(fetch.data.data);
+      setCategories((p)=>{
+        return (p.lenght>0?p:fetch.data.data)
+      });
     } catch (error) {
       console.log("error", error);
     }
   };
 
   useEffect(() => {
+    
     fetchCategories();
     setLocation(indianStates);
   }, []);

@@ -31,7 +31,7 @@ function HeaderSection({ jobData }) {
   };
 
   return (
-    <div>
+    <div className="z-0">
       <Carousel
         responsive={responsive}
         showArrows={false}

@@ -15,27 +15,28 @@ function Home() {
   const [listJobs, setListJobs] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [loader,setLoader] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   const totalPages = Math.ceil(total / ITEMS_PERPAGE);
+  console.log("no of  page", totalPages);
 
   const fetchJobsAPI = async () => {
     try {
-      setLoader(true)
-setTimeout(async() => {
-  setLoader(true)
+      setLoader(true);
+      setTimeout(async () => {
+        setLoader(true);
 
-  const fetch = await axios.get(`${API.JOB_URL}?page=${page}`);
-  const fetchedJobs = fetch.data.data;
-        
-  setTotal(fetch?.data?.count);
-  console.log("fetchedJobs", fetch);
-  setSliderJobs(fetchedJobs.slice(0, 5));
-  setJobs([]);
-  setLoader(false)
-}, 5000);
+        const fetch = await axios.get(`${API.JOB_URL}?page=${page}`);
+        const fetchedJobs = fetch.data.data;
+
+        setTotal(fetch?.data?.count || 1);
+        console.log("fetchedJobs", fetch.data);
+        setSliderJobs(fetchedJobs.slice(0, 5));
+        setJobs(fetchedJobs);
+        setLoader(false);
+      }, 5000);
     } catch (error) {
-       setLoader(false)
+      setLoader(false);
       console.log("error", error);
     }
   };
@@ -67,6 +68,10 @@ setTimeout(async() => {
 
   useEffect(() => {
     fetchJobsAPI();
+
+    return () => {
+      setJobs([])
+   };
   }, [page]);
 
   const [categories, setCategories] = useState([]);
@@ -81,7 +86,7 @@ setTimeout(async() => {
     setPage((p) => p - 1);
   };
 
-  const [searchTerm , setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState("");
 
   const searchData = async (value) => {
     try {
@@ -91,22 +96,26 @@ setTimeout(async() => {
 
       console.log("fetch", fetch);
       setJobs(fetch.data.data);
+      setTotal(fetch?.data?.data.length || 1);
     } catch (error) {
       console.log("error", error);
     }
   };
 
-  useEffect(()=>{
-    if(searchTerm){
-      searchData(searchTerm)
-    }
-  },[searchTerm])
+  useEffect(() => {
+   // if (searchTerm) {
+      searchData(searchTerm);
+   // }
 
+   return () => {
+    setJobs([])
+ };
+  }, [searchTerm]);
 
+  console.log("jobs", jobs);
 
   return (
     <>
-    
       <div className="relative  w-full ">
         <HeaderSection
           setCategories={setCategories}
@@ -120,6 +129,7 @@ setTimeout(async() => {
             categories={categories}
             setCategories={setCategories}
             setJobs={setJobs}
+            
           />
         </div>
       </div>
@@ -141,8 +151,11 @@ setTimeout(async() => {
         </div>
       </section>
 
-
-      { loader && <div className="flex justify-center items-center"><Loader/></div>}
+      {loader && (
+        <div className="flex justify-center items-center">
+          <Loader />
+        </div>
+      )}
 
       <div id="jobs" className="mb-12 w-[100%] ">
         <div className="w-full  md:w-[80%] mx-auto p-4">
@@ -150,24 +163,27 @@ setTimeout(async() => {
             jobs?.map((job) => <JobCard key={job.id} {...job} />)
           ) : (
             <div>
-            {!loader && <p className="flex justify-center py-10 text-2xl font-bold text-gray-500">
-              No jobs found!
-            </p>}</div>
+              {!loader && (
+                <p className="flex justify-center py-10 text-2xl font-bold text-gray-500">
+                  No jobs found!
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
       <section className="w-[100%]  ">
         <div className="w-full  md:w-[80%] mx-auto">
-          {!loader && jobs.length >0 &&
-          <Pagination
-            totalPages={totalPages}
-            setPage={setPage}
-            // noOfpage={jobs.length / ITEMS_PERPAGE}
-            currentPage={page}
-            onRightclick={handleRightpage}
-            onLeftclick={handleLeftpage}
-          />
-}
+          {!loader && jobs.length > 0 && (
+            <Pagination
+              totalPages={totalPages}
+              setPage={setPage}
+              noOfpage={jobs.length / ITEMS_PERPAGE}
+              currentPage={page}
+              onRightclick={handleRightpage}
+              onLeftclick={handleLeftpage}
+            />
+          )}
         </div>
       </section>
     </>

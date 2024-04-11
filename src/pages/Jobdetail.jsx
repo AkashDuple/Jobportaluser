@@ -6,12 +6,18 @@ import { useLocation } from "react-router-dom";
 import JobBanner from "/assets/imgs/jobBanner.jpg";
 import axios from "axios";
 import API from "../ApiRoutes";
+import { toast, Toaster } from "react-hot-toast";
 
 const Jobdetail = () => {
   const [modal, setModal] = useState(false);
   const [data, setJobData] = useState({});
   const [timeAgo, setTimeAgo] = useState("");
+  const [toaster, setToaster] = useState(false);
 
+  const toastMessage = () => {
+    setModal(false);
+    // toast.success("Applied");
+  };
   const location = useLocation();
   const id = location.state.itemId;
   console.log(id);
@@ -62,8 +68,17 @@ const Jobdetail = () => {
     return () => clearInterval(intervalId);
   }, [data.createdAt]);
 
+  // if (toaster === 1) {
+  //   toast.success("Successfully toasted!");
+  // } else if (toaster === -1) {
+  //   toast.error("error!");
+  // }
+
   return (
     <div className="">
+      <div>
+        <Toaster />
+      </div>
       <div
         style={{ backgroundImage: `url('${JobBanner}')` }}
         className="relative flex text-center bg-cover bg-center bg-no-repeat  items-center h-[45vh] justify-center text-4xl font-semibold bg-slate-100 shadow-lg  "
@@ -80,14 +95,21 @@ const Jobdetail = () => {
         <p className="text-md  font-semibold inline-flex text-center rounded-full  text-amber-600  ">
           <Link to="/">Home</Link>
           <span className="px-2">{">>"}</span>
-          <Link to="#"><span className="">Job-details</span></Link>
+          <Link to="#">
+            <span className="">Job-details</span>
+          </Link>
         </p>
       </div>
 
       <div className=" mx-auto  py-10 px-4 w-full shadow-lg rounded-lg relative">
         {modal && (
           <div className="mr-40 ">
-            <Submit id={id} title={data?.title} close={() => setModal(false)} />
+            <Submit
+              id={id}
+              title={data?.title}
+              close={() => setModal(false)}
+              onSubmitModal={toastMessage}
+            />
           </div>
         )}
 
@@ -132,7 +154,7 @@ const Jobdetail = () => {
         </div>
 
         <div className="float-right ">
-        <button
+          <button
             onClick={applyHandler}
             className="bg-blue-500 text-white text-sm px-6 py-1 rounded-md hover:bg-blue-600 "
           >

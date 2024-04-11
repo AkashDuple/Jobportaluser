@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 function Navbar() {
   return (
-    <div className=" h-[80px] z-50 relative">
-      <div className="h-20 flex items-center justify-between fixed w-full text-black bg-slate-200 ">
+    <div className=" h-[80px] z-[9999] relative">
+      <div className="h-20 flex items-center justify-between fixed w-full text-black bg-slate-200  hover:text-gray-700">
         <div className=" flex text-3xl font-bold p-4">
-          <Link to="/">Joboard.</Link>
+          {/* <Link to="/">Joboard.</Link> */}
+          <a href="/">Joboard.</a>
         </div>
 
         <div className="flex justify-center items-center ">

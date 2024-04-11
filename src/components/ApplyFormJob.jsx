@@ -2,9 +2,11 @@ import React from "react";
 import { useFormik } from "formik";
 import API from "../ApiRoutes";
 import axios from "axios";
+import { useToaster, toast } from "react-hot-toast";
+
 const AWS_S3 = "http://64.227.173.23:8080/aws-s3/image-upload/";
 const ApplyFormJob = (props) => {
-
+  // const { toast } = useToaster();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -54,8 +56,13 @@ const ApplyFormJob = (props) => {
         );
 
         console.log("Submission response:", submitResponse);
+        props.onSubmitModal(false);
+        toast.success("Applied Successfully!");
       } catch (error) {
         console.error("Error submitting details:", error);
+        props.onSubmitModal(false);
+        toast.error(`${error}`);
+        console.error("Error:", error);
       }
     },
   });
@@ -91,7 +98,7 @@ const ApplyFormJob = (props) => {
             e.stopPropagation();
           }}
         >
-          <form  className="" onSubmit={formik.handleSubmit}>
+          <form className="" onSubmit={formik.handleSubmit}>
             <div className="py-2 border-b flex justify-between items-center ">
               <div className="text-xl font-semibold">Apply</div>
               <div
