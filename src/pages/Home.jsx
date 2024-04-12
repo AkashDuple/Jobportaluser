@@ -7,6 +7,7 @@ import Pagination from "../components/Pagination";
 import axios from "axios";
 import API from "../ApiRoutes";
 import Loader from "../components/Loader";
+import { useLocation } from 'react-router-dom'
 
 const ITEMS_PERPAGE = 10;
 function Home() {
@@ -15,11 +16,14 @@ function Home() {
   const [listJobs, setListJobs] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState(true);
 
   const totalPages = Math.ceil(total / ITEMS_PERPAGE);
   console.log("no of  page", totalPages);
-
+ 
+  const location = useLocation();
+  const { state } = location; 
+ 
   const fetchJobsAPI = async () => {
     try {
       setLoader(true);
@@ -34,7 +38,7 @@ function Home() {
         setSliderJobs(fetchedJobs.slice(0, 5));
         setJobs(fetchedJobs);
         setLoader(false);
-      }, 5000);
+      }, 2000);
     } catch (error) {
       setLoader(false);
       console.log("error", error);
@@ -66,8 +70,19 @@ function Home() {
     setListJobs(tempJobs.slice(0, 10));
   };
 
+  // const element = document.getElementById(state?.jobs);
+  // if (element) {
+  //   element.scrollIntoView({ behavior: 'smooth' });
+  // }
+
+
   useEffect(() => {
     fetchJobsAPI();
+       
+    // const element = document.getElementById(state?.jobs);
+    // if (element) {
+    //   element.scrollIntoView({ behavior: 'smooth' });
+    // }
 
     return () => {
       setJobs([])
@@ -112,10 +127,33 @@ function Home() {
  };
   }, [searchTerm]);
 
+
+  useEffect(() => {
+
+    if (!loader && localStorage.getItem('clickedJobsLink') === 'true') {
+      const centerX = (document.body.scrollWidth - window.innerWidth) / 2;
+      const centerY = (document.body.scrollHeight - window.innerHeight) / 4;
+
+      window.scrollTo({
+        top: centerY,
+        left: centerX,
+        behavior: 'smooth'
+      });
+      localStorage.removeItem('clickedJobsLink')
+    } else if (!loader && localStorage.getItem('clickedJobsLink') === 'false') {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+    
+  }, [loader]);
+
   console.log("jobs", jobs);
 
   return (
-    <>
+    < >
       <div className="relative  w-full ">
         <HeaderSection
           setCategories={setCategories}
@@ -134,7 +172,7 @@ function Home() {
         </div>
       </div>
 
-      <section className="w-[100%]  my-16 ">
+      <section className="w-[100%]   my-16 ">
         <div className="w-full  md:w-[80%] mx-auto ">
           <div className=" flex flex-wrap justify-center gap-2   ">
             {categories?.map((category) => (
@@ -152,12 +190,12 @@ function Home() {
       </section>
 
       {loader && (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center h-[350px]">
           <Loader />
         </div>
       )}
 
-      <div id="jobs" className="mb-12 w-[100%] ">
+      <div id="jobs" className="mb-12 w-[100%]">
         <div className="w-full  md:w-[80%] mx-auto p-4">
           {jobs?.length > 0 ? (
             jobs?.map((job) => <JobCard key={job.id} {...job} />)

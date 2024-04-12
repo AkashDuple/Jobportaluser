@@ -49,7 +49,7 @@ export default function Pagination({ totalPages, currentPage, setPage, }) {
                 key={index}
                 className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                   index + 1 === currentPage
-                    ? "text-white bg-indigo-600"
+                    ? "text-white bg-blue-600"
                     : "text-gray-900"
                 } ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0`}
                 onClick={() => setPage(index + 1)}

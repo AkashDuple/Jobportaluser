@@ -13,7 +13,8 @@ function Navbar() {
 
         <div className="flex justify-center items-center ">
           <div className="p-4 text-md md:text-lg font-semibold hover:text-gray-700">
-            <a href="/">Jobs</a>
+             <a href="/" onClick={ localStorage.setItem('clickedJobsLink', 'true')}>Jobs</a> 
+            {/* <Link to={{ pathname: '/', state: { jobs: 'jobs' } }}>Jobs</Link> */}
           </div>
           <span>|</span>
           <div className="p-4  text-md md:text-lg  font-semibold">
